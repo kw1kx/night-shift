@@ -1,0 +1,5 @@
+1. Run BUILD-PAGES.bat (Node.js required on your PC only).
+2. Create a new public repository named night-shift at https://github.com/new.
+3. Upload everything INSIDE dist (index.html, assets, audio, .nojekyll) to the repository root, then commit to main.
+4. Settings > Pages > Deploy from a branch > main > /(root) > Save.
+5. Check the Pages status. Once deployed, open the published URL.

@@ -1,0 +1,14 @@
+{
+  "name": "night-shift",
+  "version": "0.7.2",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "three": "^0.180.0",
+    "vite": "^7.0.0"
+  }
+}
