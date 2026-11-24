@@ -2,8 +2,13 @@ name: Deploy Night Shift to GitHub Pages
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - README.md
+    paths:
+      - 'NightShift-v0.7.2-GitHub.zip'
+      - 'package.json'
+      - 'index.html'
+      - '*.js'
+      - '*.css'
+      - 'public/**'
   workflow_dispatch:
 permissions:
   contents: read
@@ -21,11 +26,27 @@ jobs:
         with:
           node-version: '22'
       - uses: actions/configure-pages@v5
-      - run: npm install --no-audit --no-fund
-      - run: npm run build -- --base=/night-shift/
+      - name: Unpack game and validate assets
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/night-shift"
+          if [ -f NightShift-v0.7.2-GitHub.zip ]; then
+            unzip -q NightShift-v0.7.2-GitHub.zip -d "$RUNNER_TEMP/night-shift"
+          else
+            cp -a . "$RUNNER_TEMP/night-shift/"
+          fi
+          cd "$RUNNER_TEMP/night-shift"
+          test -f package.json
+          test -f index.html
+          test -f main.js
+          test "$(find public/audio -type f -name '*.mp3' | wc -l)" -ge 27
+          npm install --no-audit --no-fund
+          npm run build -- --base=/night-shift/
+          test -f dist/index.html
+          test "$(find dist/audio -type f -name '*.mp3' | wc -l)" -ge 27
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: ${{ runner.temp }}/night-shift/dist
   deploy:
     needs: build
     runs-on: ubuntu-latest
