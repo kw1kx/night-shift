@@ -3,7 +3,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'NightShift-v0.7.2-GitHub.zip'
+      - 'NightShift-*-GitHub.zip'
       - 'package.json'
       - 'index.html'
       - '*.js'
@@ -30,8 +30,10 @@ jobs:
         shell: bash
         run: |
           mkdir -p "$RUNNER_TEMP/night-shift"
-          if [ -f NightShift-v0.7.2-GitHub.zip ]; then
-            unzip -q NightShift-v0.7.2-GitHub.zip -d "$RUNNER_TEMP/night-shift"
+          archive=$(find . -maxdepth 1 -type f -name 'NightShift-*-GitHub.zip' | sort -V | tail -n 1)
+          if [ -n "$archive" ]; then
+            echo "Building $archive"
+            unzip -q "$archive" -d "$RUNNER_TEMP/night-shift"
           else
             cp -a . "$RUNNER_TEMP/night-shift/"
           fi
