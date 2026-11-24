@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - 'NightShift-*-GitHub.zip'
+      - 'NightShift-*-GitHub.zip.part*'
       - 'package.json'
       - 'index.html'
       - '*.js'
@@ -30,9 +31,16 @@ jobs:
         shell: bash
         run: |
           mkdir -p "$RUNNER_TEMP/night-shift"
-          archive=$(find . -maxdepth 1 -type f -name 'NightShift-*-GitHub.zip' | sort -V | tail -n 1)
+          archive=$(find . -maxdepth 1 -type f \( -name 'NightShift-*-GitHub.zip' -o -name 'NightShift-*-GitHub.zip.part00' \) | sed 's/\.part00$//' | sort -Vu | tail -n 1)
+          if [ -n "$archive" ] && [ ! -f "$archive" ]; then
+            test -f "$archive.part00"
+            test -f "$archive.part01"
+            cat "$archive.part"[0-9][0-9] > "$RUNNER_TEMP/combined-game.zip"
+            archive="$RUNNER_TEMP/combined-game.zip"
+          fi
           if [ -n "$archive" ]; then
             echo "Building $archive"
+            unzip -tq "$archive"
             unzip -q "$archive" -d "$RUNNER_TEMP/night-shift"
           else
             cp -a . "$RUNNER_TEMP/night-shift/"
